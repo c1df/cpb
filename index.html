@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  
+  <!-- SEO & INDEXING TAGS -->
+  <title>চাকরি পাতা | আপনার চাকরির আবেদন ট্র্যাকার</title>
+  <meta name="description" content="চাকরি.পাতা.বাংলা - আপনার করা চাকরির আবেদনগুলো সেভ রাখুন এবং ট্র্যাক করুন। ইন্টারভিউ এবং চাকরির আপডেট মনে রাখার সেরা অফলাইন অ্যাপ।">
+  <meta name="keywords" content="চাকরি, চাকরির খবর, জব ট্র্যাকার, চাকরি পাতা, bangladesh jobs, job tracker bd, chakri pata">
+  <meta name="robots" content="index, follow">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="চাকরি পাতা | জব অ্যাপ্লিকেশন ট্র্যাকার">
+  <meta property="og:description" content="কোথায় সিভি দিয়েছেন? ট্র্যাক রাখুন সহজেই।">
+  
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg: #f0f9ff; /* Light Sky Blue */
+      --app-bg: #ffffff;
+      --primary: #0284c7; /* Corporate Blue */
+      --primary-dark: #0369a1;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      
+      /* Status Colors */
+      --status-pending: #3b82f6; /* Blue */
+      --status-interview: #f59e0b; /* Orange */
+      --status-selected: #10b981; /* Green */
+      --status-rejected: #ef4444; /* Red */
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Anek Bangla', sans-serif; }
+
+    body {
+      background-color: var(--bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: var(--text-main);
+    }
+
+    .app-container {
+      background-color: var(--app-bg);
+      width: 100%;
+      max-width: 420px;
+      height: 100vh;
+      max-height: 850px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 40px rgba(2, 132, 199, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
+
+    @media (min-width: 421px) {
+      .app-container { height: 90vh; border-radius: 24px; border: 1px solid var(--border); }
+    }
+
+    /* Header */
+    .top-bar {
+      padding: 1.5rem 1.5rem 1rem;
+      background: var(--primary);
+      color: white;
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
+      box-shadow: 0 4px 15px rgba(2, 132, 199, 0.2);
+      z-index: 10;
+    }
+
+    .top-bar h1 { font-size: 1.5rem; font-weight: 800; }
+    .top-bar p { font-size: 0.9rem; opacity: 0.9; margin-top: 2px; }
+
+    /* Views */
+    .view-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem 1.5rem 80px;
+    }
+
+    .view { display: none; animation: fadeIn 0.3s ease; }
+    .view.active { display: block; }
+
+    /* Dashboard Stats */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: #ffffff;
+      padding: 1rem;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    }
+
+    .stat-card.full-width { grid-column: span 2; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; }
+    .stat-card.full-width .stat-title { color: rgba(255,255,255,0.8); }
+
+    .stat-title { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; margin-bottom: 5px; }
+    .stat-number { font-size: 2rem; font-weight: 800; line-height: 1; }
+
+    /* Form */
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 5px; color: var(--text-main); }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus, .form-group select:focus { border-color: var(--primary); }
+    
+    .btn-submit {
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .btn-submit:active { transform: scale(0.98); background: var(--primary-dark); }
+
+    /* Job List */
+    .job-card {
+      background: white;
+      border: 1px solid var(--border);
+      padding: 15px;
+      border-radius: 16px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      position: relative;
+    }
+
+    .job-company { font-size: 1.1rem; font-weight: 800; color: var(--text-main); }
+    .job-role { font-size: 0.95rem; color: var(--primary); font-weight: 600; margin-bottom: 8px; }
+    .job-date { font-size: 0.8rem; color: var(--text-muted); }
+
+    .status-select {
+      margin-top: 10px;
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      width: 100%;
+    }
+
+    .delete-btn {
+      position: absolute;
+      top: 15px; right: 15px;
+      background: #fee2e2;
+      color: #ef4444;
+      border: none;
+      width: 30px; height: 30px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .empty-state { text-align: center; color: var(--text-muted); margin-top: 3rem; padding: 2rem; background: #f8fafc; border-radius: 16px; }
+
+    /* Visitor section */
+    .visitor-section { text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 1px dashed var(--border); }
+    .visitor-section p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0; left: 0; width: 100%;
+      background: white;
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 10px 20px;
+      border-top: 1px solid var(--border);
+      z-index: 10;
+    }
+
+    .nav-item {
+      display: flex; flex-direction: column; align-items: center;
+      color: var(--text-muted); cursor: pointer; font-weight: 600; font-size: 0.85rem;
+    }
+    .nav-item svg { width: 22px; height: 22px; margin-bottom: 4px; fill: currentColor; }
+    .nav-item.active { color: var(--primary); }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <div class="top-bar">
+      <h1>চাকরি.পাতা.বাংলা</h1>
+      <p>জব অ্যাপ্লিকেশন ট্র্যাকার</p>
+    </div>
+
+    <div class="view-area">
+      
+      <!-- 1. DASHBOARD VIEW -->
+      <div class="view active" id="view-dashboard">
+        <h2 style="font-size: 1.1rem; margin-bottom: 15px;">আপনার সামারি</h2>
+        
+        <div class="dashboard-grid">
+          <div class="stat-card full-width">
+            <div class="stat-title">মোট আবেদন করেছেন</div>
+            <div class="stat-number" id="stat-total">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title" style="color: var(--status-interview)">ইন্টারভিউ</div>
+            <div class="stat-number" id="stat-interview" style="color: var(--status-interview)">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title" style="color: var(--status-selected)">চাকরি হয়েছে</div>
+            <div class="stat-number" id="stat-selected" style="color: var(--status-selected)">0</div>
+          </div>
+        </div>
+
+        <div class="visitor-section">
+          <p>ওয়েবসাইট ভিজিটর</p>
+          <img src="https://api.visitorbadge.io/api/visitors?path=chakri.pata.bangla&label=VIEWS&countColor=%230284c7&labelStyle=upper" alt="Visitor Count">
+        </div>
+      </div>
+
+      <!-- 2. ADD JOB VIEW -->
+      <div class="view" id="view-add">
+        <h2 style="font-size: 1.1rem; margin-bottom: 15px;">নতুন আবেদন যোগ করুন</h2>
+        <form id="add-job-form">
+          <div class="form-group">
+            <label>কোম্পানির নাম</label>
+            <input type="text" id="company-name" placeholder="যেমন: Grameenphone" required autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label>পদের নাম (Role)</label>
+            <input type="text" id="job-role" placeholder="যেমন: Marketing Executive" required autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label>আবেদনের তারিখ</label>
+            <input type="date" id="apply-date" required>
+          </div>
+          <button type="submit" class="btn-submit">সেভ করুন</button>
+        </form>
+      </div>
+
+      <!-- 3. JOB LIST VIEW -->
+      <div class="view" id="view-list">
+        <h2 style="font-size: 1.1rem; margin-bottom: 15px;">আবেদনের তালিকা</h2>
+        <div id="job-list-container">
+          <!-- Jobs injected here -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+      <div class="nav-item active" onclick="switchTab('dashboard', this)">
+        <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+        ড্যাশবোর্ড
+      </div>
+      <div class="nav-item" onclick="switchTab('add', this)">
+        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        যোগ করুন
+      </div>
+      <div class="nav-item" onclick="switchTab('list', this)">
+        <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+        তালিকা
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Database via LocalStorage
+    let jobsDB = JSON.parse(localStorage.getItem('chakriAppDB')) || [];
+
+    // DOM Elements
+    const form = document.getElementById('add-job-form');
+    const listContainer = document.getElementById('job-list-container');
+    const statTotal = document.getElementById('stat-total');
+    const statInterview = document.getElementById('stat-interview');
+    const statSelected = document.getElementById('stat-selected');
+    
+    // Set today's date as default in form
+    document.getElementById('apply-date').valueAsDate = new Date();
+
+    // Initialize
+    function init() {
+      updateStats();
+      renderList();
+    }
+
+    // Add new job
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const newJob = {
+        id: Date.now(), // Unique ID
+        company: document.getElementById('company-name').value,
+        role: document.getElementById('job-role').value,
+        date: document.getElementById('apply-date').value,
+        status: 'pending' // Default status
+      };
+
+      jobsDB.push(newJob);
+      saveData();
+      
+      form.reset();
+      document.getElementById('apply-date').valueAsDate = new Date();
+      
+      // Auto switch to list view
+      document.querySelectorAll('.nav-item')[2].click();
+    });
+
+    // Render Job List
+    function renderList() {
+      listContainer.innerHTML = '';
+      
+      if(jobsDB.length === 0) {
+        listContainer.innerHTML = '<div class="empty-state">আপনি এখনও কোনো চাকরির তথ্য সেভ করেননি।<br>"যোগ করুন" ট্যাবে গিয়ে তথ্য দিন।</div>';
+        return;
+      }
+
+      // Sort newest first
+      const sortedJobs = [...jobsDB].sort((a, b) => b.id - a.id);
+
+      sortedJobs.forEach(job => {
+        const div = document.createElement('div');
+        div.className = 'job-card';
+        
+        // Define color based on status
+        let statusColor = '#3b82f6';
+        if(job.status === 'interview') statusColor = '#f59e0b';
+        if(job.status === 'selected') statusColor = '#10b981';
+        if(job.status === 'rejected') statusColor = '#ef4444';
+
+        // Format Date nicely
+        const dateObj = new Date(job.date);
+        const dateStr = dateObj.toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' });
+
+        div.innerHTML = `
+          <button class="delete-btn" onclick="deleteJob(${job.id})">×</button>
+          <div class="job-company">${job.company}</div>
+          <div class="job-role">${job.role}</div>
+          <div class="job-date">আবেদনের তারিখ: ${dateStr}</div>
+          
+          <select class="status-select" onchange="updateStatus(${job.id}, this.value)" style="color: ${statusColor}; border-color: ${statusColor}">
+            <option value="pending" ${job.status === 'pending' ? 'selected' : ''}>⏳ আবেদন করা হয়েছে</option>
+            <option value="interview" ${job.status === 'interview' ? 'selected' : ''}>📞 ইন্টারভিউয়ের ডাক</option>
+            <option value="selected" ${job.status === 'selected' ? 'selected' : ''}>🎉 চাকরি হয়েছে!</option>
+            <option value="rejected" ${job.status === 'rejected' ? 'selected' : ''}>❌ বাদ পড়া</option>
+          </select>
+        `;
+        listContainer.appendChild(div);
+      });
+    }
+
+    // Update Job Status
+    window.updateStatus = function(id, newStatus) {
+      const jobIndex = jobsDB.findIndex(j => j.id === id);
+      if(jobIndex > -1) {
+        jobsDB[jobIndex].status = newStatus;
+        saveData();
+      }
+    };
+
+    // Delete Job
+    window.deleteJob = function(id) {
+      if(confirm('আপনি কি এই রেকর্ডটি মুছে ফেলতে চান?')) {
+        jobsDB = jobsDB.filter(j => j.id !== id);
+        saveData();
+      }
+    };
+
+    // Update Dashboard Stats
+    function updateStats() {
+      statTotal.innerText = jobsDB.length.toLocaleString('bn-BD');
+      
+      const interviewCount = jobsDB.filter(j => j.status === 'interview').length;
+      const selectedCount = jobsDB.filter(j => j.status === 'selected').length;
+      
+      statInterview.innerText = interviewCount.toLocaleString('bn-BD');
+      statSelected.innerText = selectedCount.toLocaleString('bn-BD');
+    }
+
+    // Save Data & Refresh UI
+    function saveData() {
+      localStorage.setItem('chakriAppDB', JSON.stringify(jobsDB));
+      updateStats();
+      renderList();
+    }
+
+    // Tab Navigation
+    window.switchTab = function(tabName, element) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.getElementById('view-' + tabName).classList.add('active');
+      element.classList.add('active');
+    };
+
+    // Start App
+    init();
+  </script>
+</body>
+</html>
